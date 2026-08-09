@@ -10,7 +10,16 @@ Proyek ini dibangun menggunakan **React** dengan build tool **Vite** serta **Tai
 
 ### 1. Inisialisasi Proyek (Vite + React)
 ```bash
+# Via terminal, install baru
 npm create vite@latest . core-frontend-lms-saq-- --template react
+
+# Via clone git
+1. Download/Clone repository ke komputer lokal
+git clone https://github.com/Makhrozal22/core-frontend-lms-saq.git
+2. Masuk ke folder proyek
+cd core-frontend-lms-saq
+3. Pindah ke branch develop
+git checkout develop
 
 # Router & State Management
 npm install react-router-dom zustand

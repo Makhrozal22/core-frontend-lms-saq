@@ -33,18 +33,8 @@ Sprint 3 (Payment Gateway Sync):
 [S3] Fix: Callback handler ketika transaksi dibatalkan user
 
 🔄 3. ALUR KERJA DETAIL (STEP-BY-STEP COMMAND)
-🚀 Langkah 1: Clone Repository (Hanya Dilakukan 1x di Awal)
-Buka terminal/command prompt di laptop Anda, lalu jalankan:
-# 1. Download/Clone repository ke komputer lokal
-git clone https://github.com/organisasi/spp-lms-frontend.git
 
-# 2. Masuk ke folder proyek
-cd spp-lms-frontend
-
-# 3. Pindah ke branch develop
-git checkout develop
-
-🌿 Langkah 2: Memulai Tugas Baru (Pindah & Buat Branch)
+🌿 Langkah 1: Memulai Tugas Baru (Pindah & Buat Branch)
 Sebelum mulai koding fitur baru, selalu pastikan Anda mengambil kode terbaru dari branch develop.
 
 # 1. Pastikan Anda berada di branch develop
@@ -56,7 +46,7 @@ git pull origin develop
 # 3. Buat dan langsung pindah ke branch fitur baru Anda
 git checkout -b fitur/s1-auth-otp-login
 
-💾 Langkah 3: Simpan Pekerjaan Berkala (Commit Local)
+💾 Langkah 2: Simpan Pekerjaan Berkala (Commit Local)
 Lakukan commit secara rutin tiap selesai menyelesaikan sub-fungsi kecil. Jangan menunggu kodingan menumpuk banyak baru di-commit!
 
 # 1. Cek file mana saja yang telah diubah/ditambah
@@ -68,7 +58,7 @@ git add .
 # 3. Simpan perubahan dengan pesan standar
 git commit -m "[S1] Fitur: Membuat komponen OtpForm dan integrasi timer resend"
 
-🔄 Langkah 4: Sinkronisasi Sebelum Push (Penting untuk Mencegah Conflict!)
+🔄 Langkah 3: Sinkronisasi Sebelum Push (Penting untuk Mencegah Conflict!)
 Sebelum Anda mengunggah (push) branch Anda ke server, cek apakah ada teman satu tim yang sudah melakukan merge fitur mereka ke develop.
 
 # 1. Ambil update dari branch develop server tanpa mengubah branch lokal Anda saat ini
@@ -81,7 +71,7 @@ git merge origin/develop
 git add .
 git commit -m "[S1] Fix: Merge conflict saat integrasi OTP"
 
-📨 Langkah 5: Mengirim Pekerjaan ke GitHub (Push to Remote)
+📨 Langkah 4: Mengirim Pekerjaan ke GitHub (Push to Remote)
 Setelah sinkronisasi berhasil tanpa conflict, sekarang aman untuk mendorong (push) hasil kerja Anda ke server GitHub.
 
 # Kirim branch fitur Anda ke GitHub
