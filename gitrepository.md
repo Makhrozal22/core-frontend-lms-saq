@@ -8,6 +8,7 @@
         ├── fitur/s1-layout-dashboard    ◄── (Branch tugas Developer B)
         └── fix/s1-resend-otp-timer      ◄── (Branch perbaikan bug)
 
+================================================================================================================================================    
 📋 2. STANDAR PENAMAAN BRANCH & COMMIT PER SPRINT
 A. Format Penamaan Branch
 Jenis Tugas,Format Nama Branch,Contoh Riil
@@ -32,6 +33,7 @@ Sprint 3 (Payment Gateway Sync):
 [S3] Fitur: Menambahkan custom hook usePayment untuk panggil Finpay Snap
 [S3] Fix: Callback handler ketika transaksi dibatalkan user
 
+================================================================================================================================================
 🔄 3. ALUR KERJA DETAIL (STEP-BY-STEP COMMAND)
 
 🌿 Langkah 1: Memulai Tugas Baru (Pindah & Buat Branch)
@@ -46,6 +48,7 @@ git pull origin develop
 # 3. Buat dan langsung pindah ke branch fitur baru Anda
 git checkout -b fitur/s1-auth-otp-login
 
+================================================================================================================================================
 💾 Langkah 2: Simpan Pekerjaan Berkala (Commit Local)
 Lakukan commit secara rutin tiap selesai menyelesaikan sub-fungsi kecil. Jangan menunggu kodingan menumpuk banyak baru di-commit!
 
@@ -58,6 +61,7 @@ git add .
 # 3. Simpan perubahan dengan pesan standar
 git commit -m "[S1] Fitur: Membuat komponen OtpForm dan integrasi timer resend"
 
+================================================================================================================================================
 🔄 Langkah 3: Sinkronisasi Sebelum Push (Penting untuk Mencegah Conflict!)
 Sebelum Anda mengunggah (push) branch Anda ke server, cek apakah ada teman satu tim yang sudah melakukan merge fitur mereka ke develop.
 
@@ -71,36 +75,22 @@ git merge origin/develop
 git add .
 git commit -m "[S1] Fix: Merge conflict saat integrasi OTP"
 
+================================================================================================================================================
 📨 Langkah 4: Mengirim Pekerjaan ke GitHub (Push to Remote)
 Setelah sinkronisasi berhasil tanpa conflict, sekarang aman untuk mendorong (push) hasil kerja Anda ke server GitHub.
 
 # Kirim branch fitur Anda ke GitHub
 git push -u origin fitur/s1-auth-otp-login
 
-🎯 6. PEMBERSIHAN DAN PENGGABUNGAN (PR & DELETE BRANCH)
-Setelah PR disetujui dan digabungkan (merged) ke branch develop oleh Lead Dev atau Admin Repo, lakukan langkah berikut di laptop Anda:
+================================================================================================================================================
+🔀 Langkah 5: Membuat Pull Request (PR) & Code Review
+Buka browser dan masuk ke repositori GitHub.
 
-# 1. Pindah kembali ke branch develop
-git checkout develop
+Anda akan melihat banner tombol hijau "Compare & pull request". Klik tombol tersebut.
 
-# 2. Ambil perubahan terbaru (termasuk merge dari branch Anda yang sudah masuk develop)
-git pull origin develop
+Atur arah penggabungan secara teliti:
 
-# 3. Hapus branch fitur lokal yang sudah selesai agar rapi
-git branch -d fitur/s1-auth-otp-login
-
-# 4. (Opsional) Hapus juga branch dari server GitHub jika sudah tidak diperlukan
-# Perhatikan tanda '-' di depan 'origin...' artinya menghapus (delete)
-git push origin --delete fitur/s1-auth-otp-login
-
-🔀 Langkah 6: Membuat Pull Request (PR) & Code Review
-Buka browser dan masuk ke repository GitHub / GitLab.
-
-Anda akan melihat tombol "Compare & Pull Request". Klik tombol tersebut.
-
-Atur arah penggabungan:
-
-Base branch: develop ◄── Compare branch: fitur/s1-auth-otp-login
+Base (Tujuan): develop ◄── Compare (Sumber): fitur/s1-auth-otp-login
 
 Isi judul PR: [S1] Fitur Login Nomor HP & OTP WhatsApp
 
@@ -110,6 +100,23 @@ Masukkan Lead Front-End sebagai Reviewer.
 
 Tunggu peninjauan kode (Code Review). Jika disetujui (Approved), Lead akan melakukan Merge ke develop.
 
+================================================================================================================================================    
+🎯 Langkah 6: PEMBERSIHAN DAN PENGGABUNGAN (PR & DELETE BRANCH)
+Setelah PR disetujui dan digabungkan (merged) ke branch develop oleh Lead Dev atau Admin Repo, lakukan langkah berikut di laptop Anda:
+
+# 1. Pindah kembali ke branch develop
+git checkout develop
+
+# 2. Ambil perubahan terbaru (termasuk merge dari branch Anda yang baru disetujui)
+git pull origin develop
+
+# 3. Hapus branch fitur lokal yang sudah selesai agar rapi
+git branch -d fitur/s1-auth-otp-login
+
+# 4. (Opsional) Hapus branch fitur dari server GitHub jika belum terhapus otomatis
+git push origin --delete fitur/s1-auth-otp-login
+
+================================================================================================================================================    
 ┌─────────────────┬─────────────────────────────────────────────────────────┐
 │ Perintah Git    │ Kapan Harus Digunakan?                                  │
 ├─────────────────┼─────────────────────────────────────────────────────────┤
