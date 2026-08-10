@@ -7,7 +7,7 @@ src/modules/auth/
 │   ├── RequestOtpForm.jsx    # UI Form input nomor HP
 │   └── VerifyOtpForm.jsx     # UI Form input 6-digit OTP
 ├── 📁 hooks/
-│   ├── useAuth.js            # Hook pengelola state & proses login
+│   ├── useAuthOtp.js         # Hook pengelola state & proses login
 │   └── useOtpTimer.js        # Hook hitung mundur jeda re-send OTP
 ├── 📁 pages/
 │   ├── LoginPage.jsx         # Entry point halaman Login/Aktivasi
@@ -19,7 +19,7 @@ src/modules/auth/
 - [x] Input Nomor WhatsApp / HP
 - [x] Request Kode OTP via Endpoint Backend Laravel
 - [x] Verifikasi OTP & Penyimpanan JWT Token ke LocalStorage/Cookies
-- [ ] Auto Re-send OTP Timer (Next Feature)
+- [x] Auto Re-send OTP Timer 
 
 ## 📌 Endpoint API (Laravel)
 - `POST /api/auth/otp/request` - Param: `{ phone_number: string }`

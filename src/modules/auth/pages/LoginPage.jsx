@@ -1,63 +1,23 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/authService';
-import { useAuthStore } from '../../../store/authStore';
+import React from 'react';
+import { useAuthOtp } from '../hooks/useAuthOtp';
 import { RequestOtpForm } from '../components/RequestOtpForm';
 import { VerifyOtpForm } from '../components/VerifyOtpForm';
 
 export const LoginPage = () => {
-  const navigate = useNavigate();
-  const setAuth = useAuthStore((state) => state.state?.setAuth || state.setAuth);
-
-  const [step, setStep] = useState('REQUEST_OTP');
-  const [phone, setPhone] = useState('');
-  const [otpCode, setOtpCode] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const handleRequestOtp = async (e) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-
-    try {
-      await authService.requestOtp(phone);
-      setStep('VERIFY_OTP');
-    } catch (err) {
-      setError(
-        err.response?.data?.message ||
-        err.response?.data?.errors?.phone_number?.[0] ||
-        'Gagal mengirim OTP. Pastikan nomor HP terdaftar.'
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-
-    try {
-      const res = await authService.verifyOtp(phone, otpCode);
-      const token = res.token || res.access_token || res.data?.token || res.data?.access_token;
-      const user = res.user || res.data?.user || res.data || { phone_number: phone };
-
-      if (!token) throw new Error('Token tidak ditemukan dari server.');
-
-      setAuth(token, user);
-      navigate('/beranda', { replace: true });
-    } catch (err) {
-      setError(
-        err.response?.data?.message ||
-        err.response?.data?.errors?.otp_code?.[0] ||
-        'Verifikasi OTP gagal. Kode salah atau kadaluarsa.'
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    step,
+    phone,
+    setPhone,
+    otpCode,
+    setOtpCode,
+    loading,
+    error,
+    timer,
+    handleRequestOtp,
+    handleVerifyOtp,
+    handleResendOtp,
+    handleBackToPhone,
+  } = useAuthOtp();
 
   return (
     <div className="flex-1 flex flex-col justify-between">
@@ -86,15 +46,15 @@ export const LoginPage = () => {
             otpCode={otpCode}
             setOtpCode={setOtpCode}
             onSubmit={handleVerifyOtp}
-            onBack={() => {
-              setStep('REQUEST_OTP');
-              setError(null);
-            }}
+            onBack={handleBackToPhone}
+            onResend={handleResendOtp}
+            timer={timer}
             loading={loading}
           />
         )}
       </div>
 
+      {/* Footer Info */}
       <div className="mt-6 pb-2">
         <p className="text-center text-sm text-slate-400">
           Belum punya akun?{' '}
