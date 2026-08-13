@@ -81,8 +81,8 @@ export const DashboardLayout = () => {
         <StatusBar bgColor="bg-[#1A1D2E]" textColor="text-slate-300" />
 
         {/* Main Content */}
-        <div 
-          ref={scrollContainerRef} 
+        <div
+          ref={scrollContainerRef}
           className="flex-1 overflow-y-auto no-scrollbar scroll-smooth"
         >
           <Outlet context={{ user, handleLogout }} />
