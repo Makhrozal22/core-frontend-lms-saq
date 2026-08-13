@@ -6,7 +6,7 @@ import { DashboardLayout } from '../layouts/DashboardLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 
 import { LoginPage } from '../modules/auth/pages/LoginPage';
-import { ProfilePage } from '../modules/auth/pages/ProfilePage';
+import ProfilePage from "@/modules/auth/pages/ProfilePage";
 import { SppDashboardPage } from '../modules/finance/pages/SppDashboardPage';
 import { SppDetailPage } from '../modules/finance/pages/SppDetailPage';
 import { SppHistoryPage } from '../modules/finance/pages/SppHistoryPage';

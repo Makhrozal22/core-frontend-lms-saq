@@ -3,27 +3,23 @@ import { Link } from 'react-router-dom';
 
 export const BottomNavigation = ({ navItems, isActive }) => {
   return (
-    <div className="shrink-0 bg-[#1A1D2E]/95 backdrop-blur-md border-t border-slate-800/80 px-3 pt-2.5 pb-4 sm:pb-3 flex items-center justify-around z-30">
+    <nav className=" border-t border-slate-800 px-4 py-2 flex justify-around items-center shrink-0 z-20">
       {navItems.map((item) => {
         const active = isActive(item.path);
         return (
           <Link
             key={item.path}
             to={item.path}
-            className="flex flex-col items-center gap-1 px-3 py-1 transition-all duration-150 active:scale-95"
+            className={`flex flex-col items-center py-1 px-3 rounded-xl transition-all duration-200 ${
+              active ? 'text-emerald-400 font-semibold' : 'text-slate-400 hover:text-slate-200'
+            }`}
           >
             {item.icon(active)}
-            <span
-              className={`text-[11px] font-medium tracking-tight transition-colors ${
-                active ? 'text-[#5B7EB5] font-semibold' : 'text-slate-400'
-              }`}
-            >
-              {item.label}
-            </span>
+            <span className="text-[11px] mt-1">{item.label}</span>
           </Link>
         );
       })}
-    </div>
+    </nav>
   );
 };
 

@@ -1,54 +1,88 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowLeft, Search, Filter, Receipt } from 'lucide-react';
+import { HistoryTable } from '../components/HistoryTable';
+
+// Dummy data riwayat transaksi (Siap diganti integrasi API)
+const mockHistoryData = [
+  { id: 'TX-101', title: 'Pembayaran SPP Bulan Agustus 2026', date: '10 Aug 2026, 09:30', amount: 350000, status: 'Berhasil', student_name: 'Budi Santoso' },
+  { id: 'TX-102', title: 'Topup Saldo Jajan Kantin', date: '08 Aug 2026, 14:15', amount: 50000, status: 'Berhasil', student_name: 'Budi Santoso' },
+  { id: 'TX-103', title: 'Pembayaran Uang Gedung / Masuk', date: '01 Aug 2026, 11:00', amount: 500000, status: 'Berhasil', student_name: 'Siti Aminah' },
+  { id: 'TX-104', title: 'Pembayaran SPP Bulan Juli 2026', date: '05 Jul 2026, 10:20', amount: 350000, status: 'Berhasil', student_name: 'Budi Santoso' },
+];
 
 export const SppHistoryPage = () => {
-  const historyItems = [
-    { bulan: 6, label: 'SPP Juni 2025', tanggal: '15 Jun 2025', status: 'Lunas' },
-    { bulan: 5, label: 'SPP Mei 2025', tanggal: '10 Mei 2025', status: 'Lunas' },
-    { bulan: 4, label: 'SPP April 2025', tanggal: '08 Apr 2025', status: 'Lunas' },
-    { bulan: 3, label: 'SPP Maret 2025', tanggal: '05 Mar 2025', status: 'Lunas' },
-    { bulan: 2, label: 'SPP Februari 2025', tanggal: '12 Feb 2025', status: 'Lunas' },
-    { bulan: 1, label: 'SPP Januari 2025', tanggal: '07 Jan 2025', status: 'Lunas' },
-  ];
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState('ALL');
+
+  // Filter transaksi berdasarkan pencarian judul/nama santri
+  const filteredTransactions = useMemo(() => {
+    return mockHistoryData.filter((tx) => {
+      const matchQuery = tx.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         tx.student_name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchStatus = filterStatus === 'ALL' || tx.status === filterStatus;
+      return matchQuery && matchStatus;
+    });
+  }, [searchQuery, filterStatus]);
+
+  const handleSelectTransaction = (tx) => {
+    alert(`Menampilkan detail struk transaksi: ${tx.id} - ${tx.title}`);
+  };
 
   return (
-    <div>
-      {/* Blue Header with Back Button */}
-      <div className="bg-[#2A3A5C] px-6 pt-3 pb-5">
-        <div className="flex items-center gap-3 mb-1">
-          <Link to="/beranda" className="text-white active:text-slate-300 transition-colors">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-            </svg>
+    <div className="space-y-4 pb-28 text-slate-800 bg-slate-50 min-h-full">
+      {/* 1. Header Banner Emerald (Konsisten dengan halaman lain) */}
+      <div className="bg-emerald-600 px-5 pt-6 pb-6 rounded-b-[2rem] shadow-lg text-white">
+        <div className="flex items-center gap-3 mb-2">
+          <Link to="/beranda" className="w-9 h-9 bg-white/20 hover:bg-white/30 rounded-2xl flex items-center justify-center transition-colors text-white">
+            <ArrowLeft size={20} />
           </Link>
-          <h1 className="text-lg font-bold text-white">Riwayat Pembayaran</h1>
+          <h1 className="font-extrabold text-white text-lg leading-tight">Riwayat Transaksi</h1>
         </div>
+        <p className="text-emerald-100 text-xs ml-12">Catatan seluruh pembayaran dan mutasi dana santri</p>
       </div>
 
-      {/* History List */}
-      <div className="px-6 pt-5 pb-4">
-        <div className="bg-[#222738] border border-slate-700/50 rounded-2xl p-4">
-          {historyItems.map((item, index) => (
-            <div key={item.bulan}>
-              <div className="flex items-center justify-between py-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-[#5B7EB5]/20 border border-[#5B7EB5]/30 flex items-center justify-center">
-                    <span className="text-xs font-bold text-[#5B7EB5]">{item.bulan}</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-white">{item.label}</p>
-                    <p className="text-xs text-slate-400">{item.tanggal}</p>
-                  </div>
-                </div>
-                <span className="text-xs font-bold text-[#5B7EB5] bg-[#5B7EB5]/10 border border-[#5B7EB5]/30 px-2.5 py-1 rounded-lg">
-                  {item.status}
-                </span>
-              </div>
-              {index < historyItems.length - 1 && (
-                <div className="border-t border-slate-700/40"></div>
-              )}
-            </div>
-          ))}
+      <div className="px-4 space-y-4">
+        {/* 2. Filter & Search Bar */}
+        <div className="space-y-2.5">
+          <div className="relative">
+            <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Cari transaksi atau nama santri..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 shadow-sm"
+            />
+          </div>
+
+          <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+            {['ALL', 'Berhasil', 'Pending'].map((status) => (
+              <button
+                key={status}
+                onClick={() => setFilterStatus(status)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                  filterStatus === status
+                    ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
+                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                {status === 'ALL' ? 'Semua Status' : status}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 3. Daftar Histori Menggunakan Komponen HistoryTable */}
+        <div className="space-y-2">
+          <div className="flex justify-between items-center px-1">
+            <span className="text-xs font-bold text-slate-500">Daftar Mutasi ({filteredTransactions.length})</span>
+          </div>
+
+          <HistoryTable 
+            transactions={filteredTransactions} 
+            onSelectTransaction={handleSelectTransaction} 
+          />
         </div>
       </div>
     </div>

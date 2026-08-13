@@ -1,99 +1,258 @@
-import React from 'react';
-import { useOutletContext } from 'react-router-dom';
+import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { 
+  User, Phone, Shield, Settings, LogOut, 
+  ChevronRight, Bell, HelpCircle, Users, AlertCircle, X 
+} from "lucide-react";
 
-export const ProfilePage = () => {
-  const { user, handleLogout } = useOutletContext();
-  const userName = user?.name || 'Wali Santri';
-  const userPhone = user?.phone || '-';
+// Hook Autentikasi Proyek
+import { useAuth } from "@/hooks/useAuth";
+
+// Komponen Modal Lokal (Informasi Fitur)
+const CustomModal = ({ isOpen, title, message, onClose }) => {
+  if (!isOpen) return null;
 
   return (
-    <div>
-      {/* Blue Header */}
-      <div className="bg-[#2A3A5C] px-6 pt-3 pb-8">
-        <h1 className="text-lg font-bold text-white mb-1">Profil</h1>
-      </div>
-
-      {/* Profile Card */}
-      <div className="px-6 -mt-4">
-        <div className="bg-[#222738] border border-slate-700/50 rounded-2xl p-5 flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-[#5B7EB5]/20 border border-[#5B7EB5]/30 flex items-center justify-center">
-            <svg className="w-7 h-7 text-[#5B7EB5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-            </svg>
-          </div>
-          <div>
-            <p className="text-base font-bold text-white">{userName}</p>
-            <p className="text-xs text-slate-400 font-mono">{userPhone}</p>
-            <span className="inline-block mt-1 text-[10px] font-semibold text-[#5B7EB5] bg-[#5B7EB5]/10 border border-[#5B7EB5]/30 px-2 py-0.5 rounded-md">
-              Wali Santri
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Menu Items */}
-      <div className="px-6 pt-5 space-y-3">
-        <div className="bg-[#222738] border border-slate-700/50 rounded-2xl overflow-hidden">
-          {/* Informasi Anak */}
-          <button className="w-full px-5 py-4 flex items-center justify-between active:bg-slate-700/20 transition-colors cursor-pointer">
-            <div className="flex items-center gap-3">
-              <svg className="w-5 h-5 text-[#5B7EB5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-              </svg>
-              <span className="text-sm font-medium text-white">Informasi Anak</span>
-            </div>
-            <svg className="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-            </svg>
-          </button>
-
-          <div className="border-t border-slate-700/30 mx-5"></div>
-
-          {/* Ubah Kata Sandi */}
-          <button className="w-full px-5 py-4 flex items-center justify-between active:bg-slate-700/20 transition-colors cursor-pointer">
-            <div className="flex items-center gap-3">
-              <svg className="w-5 h-5 text-[#5B7EB5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-              </svg>
-              <span className="text-sm font-medium text-white">Ubah Kata Sandi</span>
-            </div>
-            <svg className="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-            </svg>
-          </button>
-
-          <div className="border-t border-slate-700/30 mx-5"></div>
-
-          {/* Bantuan */}
-          <button className="w-full px-5 py-4 flex items-center justify-between active:bg-slate-700/20 transition-colors cursor-pointer">
-            <div className="flex items-center gap-3">
-              <svg className="w-5 h-5 text-[#5B7EB5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
-              </svg>
-              <span className="text-sm font-medium text-white">Bantuan</span>
-            </div>
-            <svg className="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Logout Button */}
-        <button
-          onClick={handleLogout}
-          className="w-full py-3.5 rounded-2xl border border-rose-500/30 bg-rose-500/10 text-rose-400 font-semibold text-sm flex items-center justify-center gap-2 active:bg-rose-500/20 transition-colors cursor-pointer"
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs transition-all animate-fadeIn">
+      <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center space-y-4 relative scale-100 animate-scaleUp">
+        {/* Tombol Close */}
+        <button 
+          onClick={onClose}
+          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 text-slate-400 hover:bg-slate-200 flex items-center justify-center transition-colors"
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
-          </svg>
-          Keluar
+          <X size={16} />
         </button>
 
-        {/* App Version */}
-        <p className="text-center text-xs text-slate-500 pt-2 pb-4">LMS SAQ v1.0.0</p>
+        {/* Ikon Peringatan / Info */}
+        <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
+          <AlertCircle size={28} />
+        </div>
+
+        {/* Teks Konten */}
+        <div className="space-y-1.5">
+          <h3 className="text-base font-extrabold text-slate-800">{title || "Informasi Fitur"}</h3>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            {message || "Fitur ini sedang dalam tahap pengembangan dan akan segera aktif pada pembaruan berikutnya."}
+          </p>
+        </div>
+
+        {/* Tombol Aksi */}
+        <button
+          onClick={onClose}
+          className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs rounded-2xl transition-all shadow-md shadow-emerald-600/20"
+        >
+          Baik, Mengerti
+        </button>
       </div>
     </div>
   );
 };
 
-export default ProfilePage;
+export default function ProfilePage() {
+  const navigate = useNavigate();
+  const { user: parent, logout } = useAuth();
+  
+  const [logoutSheet, setLogoutSheet] = useState(false);
+  const [modalConfig, setModalConfig] = useState({ isOpen: false, title: "", message: "" });
+
+  // Data anak dari user auth
+  const children = parent?.students || parent?.children || [];
+
+  const handleLogout = () => {
+    if (logout) logout();
+    navigate("/auth/login", { replace: true });
+  };
+
+  const triggerModal = (title, message) => {
+    setModalConfig({ isOpen: true, title, message });
+  };
+
+  const closeModal = () => {
+    setModalConfig((prev) => ({ ...prev, isOpen: false }));
+  };
+
+  // Grouping Menu
+  const menuGroups = useMemo(
+    () => [
+      {
+        title: "Akun",
+        items: [
+          { 
+            icon: User, 
+            label: "Data Pribadi", 
+            sub: "Lihat dan edit profil", 
+            action: () => triggerModal("Data Pribadi", "Fitur untuk melihat dan merubah data pribadi Anda sedang dalam tahap pengembangan.") 
+          },
+          { 
+            icon: Users, 
+            label: "Daftar Anak", 
+            sub: `${children.length} anak terdaftar`, 
+            action: () => navigate("/children") 
+          },
+          { 
+            icon: Phone, 
+            label: "Ubah Nomor HP", 
+            sub: parent?.phone || "-", 
+            action: () => triggerModal("Ubah Nomor HP", "Fitur ubah nomor WhatsApp utama akan segera aktif pada pembaruan berikutnya.") 
+          },
+        ],
+      },
+      {
+        title: "Pengaturan",
+        items: [
+          { 
+            icon: Bell, 
+            label: "Notifikasi", 
+            sub: "Atur preferensi notifikasi", 
+            action: () => triggerModal("Notifikasi", "Pengaturan preferensi notifikasi pesan & aplikasi akan segera hadir.") 
+          },
+          { 
+            icon: Shield, 
+            label: "Keamanan & Biometrik", 
+            sub: "PIN, fingerprint, face ID", 
+            action: () => navigate("/biometric") 
+          },
+          { 
+            icon: Settings, 
+            label: "Pengaturan Aplikasi", 
+            sub: "Bahasa, tampilan", 
+            action: () => triggerModal("Pengaturan Aplikasi", "Fitur ubah bahasa dan tema tampilan akan segera tersedia.") 
+          },
+        ],
+      },
+      {
+        title: "Bantuan",
+        items: [
+          { 
+            icon: HelpCircle, 
+            label: "Pusat Bantuan", 
+            sub: "FAQ dan panduan penggunaan", 
+            action: () => triggerModal("Pusat Bantuan", "Pusat bantuan dan panduan penggunaan portal wali santri akan segera dibuka.") 
+          },
+        ],
+      },
+    ],
+    [children.length, parent?.phone, navigate]
+  );
+
+  return (
+    <div className="min-h-screen bg-slate-50 pb-20">
+      {/* Header Mobile */}
+      <div className="bg-white border-b border-slate-100 px-4 py-3 sticky top-0 z-10">
+        <h1 className="font-bold text-slate-800 text-center text-base">Profil Pengguna</h1>
+      </div>
+
+      <div className="px-4 pt-4 space-y-4 max-w-md mx-auto">
+        {/* Banner Profil */}
+        <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl p-5 flex items-center gap-4 shadow-md text-white">
+          <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center flex-shrink-0 border border-white/20">
+            <User size={32} className="text-white" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h2 className="font-bold text-base truncate">{parent?.name || parent?.full_name || "Wali Santri"}</h2>
+            <p className="text-emerald-100 text-xs truncate">{parent?.phone || "-"}</p>
+            {parent?.email && <p className="text-emerald-200/80 text-[11px] truncate mt-0.5">{parent.email}</p>}
+            <div className="flex items-center gap-1.5 mt-2">
+              <span className="w-2 h-2 bg-emerald-300 rounded-full animate-pulse" />
+              <span className="text-emerald-100 text-xs font-medium">{children.length} Anak Terdaftar</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Chips Anak */}
+        {children.length > 0 && (
+          <div className="flex gap-2 overflow-x-auto hide-scrollbar py-1">
+            {children.map((child, idx) => (
+              <div key={child.id || idx} className="flex-shrink-0 flex items-center gap-2 bg-white rounded-full pl-1.5 pr-3 py-1.5 border border-slate-200/60 shadow-sm">
+                <div className="w-7 h-7 rounded-full overflow-hidden bg-emerald-100 flex items-center justify-center text-xs font-bold text-emerald-700">
+                  {child.avatar ? (
+                    <img src={child.avatar} alt={child.name} className="w-full h-full object-cover" />
+                  ) : (
+                    (child.name || child.full_name || "A")[0]
+                  )}
+                </div>
+                <span className="text-slate-700 text-xs font-semibold">{child.nickname || child.name || child.full_name}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Menu Groups */}
+        {menuGroups.map(({ title, items }) => (
+          <div key={title} className="space-y-1.5">
+            <p className="text-slate-400 text-[11px] font-bold uppercase tracking-wider px-1">{title}</p>
+            <div className="bg-white rounded-3xl border border-slate-200/60 shadow-sm divide-y divide-slate-50 overflow-hidden">
+              {items.map(({ icon: Icon, label, sub, action }) => (
+                <button
+                  key={label}
+                  onClick={action}
+                  className="w-full flex items-center gap-3.5 px-4 py-3.5 hover:bg-slate-50 transition-colors text-left active:bg-slate-100"
+                >
+                  <div className="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                    <Icon size={18} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-slate-800 text-sm">{label}</p>
+                    {sub && <p className="text-slate-400 text-xs truncate mt-0.5">{sub}</p>}
+                  </div>
+                  <ChevronRight size={16} className="text-slate-300 flex-shrink-0" />
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {/* Logout Button */}
+        <button
+          onClick={() => setLogoutSheet(true)}
+          className="w-full flex items-center justify-center gap-2 bg-red-50 border border-red-100 text-red-600 font-bold py-3.5 rounded-2xl active:scale-[0.99] transition-transform"
+        >
+          <LogOut size={18} />
+          Keluar
+        </button>
+
+        <p className="text-center text-slate-400 text-[11px]">Al-Amanah Parent Portal v1.0.0</p>
+      </div>
+
+      {/* Custom Modal untuk Informasi Fitur */}
+      <CustomModal 
+        isOpen={modalConfig.isOpen}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        onClose={closeModal}
+      />
+
+      {/* Modal Konfirmasi Logout (Langsung Inline / BottomSheet Style) */}
+      {logoutSheet && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fadeIn">
+          <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 text-center space-y-4 animate-scaleUp">
+            <div className="w-14 h-14 bg-red-100 text-red-500 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
+              <LogOut size={26} />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-slate-800 font-extrabold text-base">Yakin ingin keluar?</h3>
+              <p className="text-slate-500 text-xs">Anda perlu memasukkan nomor HP & OTP kembali untuk masuk.</p>
+            </div>
+
+            <div className="space-y-2 pt-2">
+              <button
+                onClick={handleLogout}
+                className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-2xl active:scale-95 transition-all shadow-md shadow-red-500/20 text-xs"
+              >
+                Ya, Keluar
+              </button>
+              <button
+                onClick={() => setLogoutSheet(false)}
+                className="w-full border border-slate-200 text-slate-600 font-semibold py-3 rounded-2xl active:scale-95 transition-all text-xs"
+              >
+                Batal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export { ProfilePage };
