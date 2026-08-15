@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { useAuthStore } from '../../../store/authStore';
-import { useOtpTimer } from './useOtpTimer';   
+import { useOtpTimer } from './useOtpTimer';
 
 export const useAuthOtp = () => {
   const navigate = useNavigate();
@@ -14,12 +14,11 @@ export const useAuthOtp = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Gunakan hook timer internal modul auth
   const { timer, startTimer, resetTimer } = useOtpTimer(60);
 
   // Handler Request OTP
-  const handleRequestOtp = async (e) => {
-    if (e) e.preventDefault();
+  const handleRequestOtp = useCallback(async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
     setError(null);
     setLoading(true);
 
@@ -36,18 +35,20 @@ export const useAuthOtp = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [phone, startTimer]);
 
   // Handler Kirim Ulang OTP
-  const handleResendOtp = async () => {
+  const handleResendOtp = useCallback(async () => {
     if (timer > 0 || loading) return;
     setOtpCode('');
     await handleRequestOtp();
-  };
+  }, [timer, loading, handleRequestOtp]);
 
   // Handler Verifikasi OTP
-  const handleVerifyOtp = async (e) => {
-    if (e) e.preventDefault();
+  const handleVerifyOtp = useCallback(async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (loading) return;
+
     setError(null);
     setLoading(true);
 
@@ -69,15 +70,14 @@ export const useAuthOtp = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [loading, phone, otpCode, setAuth, navigate]);
 
-  // Handler Kembali ke Input Nomor HP
-  const handleBackToPhone = () => {
+  const handleBackToPhone = useCallback(() => {
     setStep('REQUEST_OTP');
     setOtpCode('');
     setError(null);
-    resetTimer(); 
-  };
+    resetTimer();
+  }, [resetTimer]);
 
   return {
     step,

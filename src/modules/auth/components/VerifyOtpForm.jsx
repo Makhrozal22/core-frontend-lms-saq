@@ -11,16 +11,18 @@ export const VerifyOtpForm = ({
   loading,
 }) => {
   const inputRefs = useRef([]);
-  const lastSubmittedOtp = useRef('');
+  const isSubmitted = useRef(false);
 
+  // Auto submit 
   useEffect(() => {
-    if (
-      otpCode.length === 6 && 
-      !loading && 
-      lastSubmittedOtp.current !== otpCode
-    ) {
-      lastSubmittedOtp.current = otpCode; 
+    if (otpCode.length === 6 && !loading && !isSubmitted.current) {
+      isSubmitted.current = true;
       onSubmit();
+    }
+
+    // Reset flag submit 
+    if (otpCode.length < 6) {
+      isSubmitted.current = false;
     }
   }, [otpCode, loading, onSubmit]);
 
@@ -28,7 +30,6 @@ export const VerifyOtpForm = ({
     const value = e.target.value;
     if (isNaN(value)) return;
 
-    lastSubmittedOtp.current = '';
     const newOtp = otpCode.split('');
     newOtp[index] = value.substring(value.length - 1);
     const combinedOtp = newOtp.join('');
@@ -41,7 +42,6 @@ export const VerifyOtpForm = ({
 
   const handleKeyDown = (e, index) => {
     if (e.key === 'Backspace') {
-      lastSubmittedOtp.current = '';
       if (!otpCode[index] && index > 0) {
         inputRefs.current[index - 1]?.focus();
       }
@@ -55,7 +55,16 @@ export const VerifyOtpForm = ({
   };
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5 animate-fadeIn">
+    <form 
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!loading && otpCode.length === 6) {
+          isSubmitted.current = true;
+          onSubmit(e);
+        }
+      }} 
+      className="space-y-5 animate-fadeIn"
+    >
       <div>
         <div className="flex justify-between items-center mb-1">
           <h2 className="font-bold text-slate-800 text-xl">Verifikasi OTP</h2>
