@@ -1,53 +1,118 @@
-//kode loading
-
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useMemo, useRef } from 'react';
+import { useStudents } from '../../finance/hooks/useStudents';
+import { useInvoices } from '../../finance/hooks/useInvoices';
+import { islamicQuotes } from '../../../utils/constants';
 
 export const useSppDashboardData = () => {
-    // Cek apakah di localStorage sudah ada data sebelumnya 
-    const cachedStudents = localStorage.getItem('cache_students');
-    const cachedInvoices = localStorage.getItem('cache_invoices');
+  const carouselRef = useRef(null);
 
-    const [students, setStudents] = useState(cachedStudents ? JSON.parse(cachedStudents) : []);
-    const [invoicesByStudent, setInvoicesByStudent] = useState(cachedInvoices ? JSON.parse(cachedInvoices) : {});
+  // 1. Menggunakan Hook Data Fetching Bawaan Anda
+  const { 
+    students = [], 
+    loading: loadingStudents, 
+    error: errorStudents, 
+    refetch: refetchStudents 
+  } = useStudents();
 
-    // Hanya tampilkan loading jika belum ada data sama sekali di cache
-    const [loading, setLoading] = useState(!cachedStudents);
-    const [error, setError] = useState(null);
+  const { 
+    invoicesByStudent = {}, 
+    loading: loadingInvoices, 
+    error: errorInvoices, 
+    refetchInvoices 
+  } = useInvoices(students);
 
-    const fetchData = async (isBackground = false) => {
-        try {
-            if (!isBackground && students.length === 0) setLoading(true);
+  // 2. UI Local State
+  const [selectedStudentId, setSelectedStudentId] = useState('ALL');
+  const [quoteIdx] = useState(() => Math.floor(Math.random() * (islamicQuotes?.length || 1)));
+  const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '' });
 
-            // panggil API Laravel Sesuaikan endpoint Anda
-            const [resStudents, resInvoices] = await Promise.all([
-                axios.get('/api/students'),
-                axios.get('/api/invoices')
-            ]);
+  // 3. Normalisasi Data Students (Mencegah Crash jika Data berupa Object)
+  const studentList = useMemo(() => {
+    return Array.isArray(students) ? students : (students?.data || []);
+  }, [students]);
 
-            const studentData = resStudents.data.data || resStudents.data;
-            const invoiceData = resInvoices.data.data || resInvoices.data;
+  // 4. Filtering Santri Berdasarkan Tab
+  const filteredStudents = useMemo(() => {
+    return selectedStudentId === 'ALL' 
+      ? studentList 
+      : studentList.filter((s) => s.id === selectedStudentId);
+  }, [studentList, selectedStudentId]);
 
-            setStudents(studentData);
-            setInvoicesByStudent(invoiceData);
+  // 5. Kalkulasi Total Nominal Tagihan & Nama Santri
+  const { totalAmount, totalUnpaidCount, selectedStudentName } = useMemo(() => {
+    let sum = 0;
+    let count = 0;
 
-            // Simpan ke cache lokal
-            localStorage.setItem('cache_students', JSON.stringify(studentData));
-            localStorage.setItem('cache_invoices', JSON.stringify(invoiceData));
-        } catch (err) {
-            console.error('Gagal memuat data API:', err);
-            if (students.length === 0) {
-                setError('Gagal memuat data dari server.');
-            }
-        } finally {
-            setLoading(false);
-        }
+    filteredStudents.forEach((student) => {
+      const invoices = invoicesByStudent[student.id] || [];
+      if (Array.isArray(invoices)) {
+        invoices.forEach((item) => {
+          if (!item.isLunas) { 
+            sum += Number(item.nominal || 0); 
+            count += 1; 
+          }
+        });
+      }
+    });
+
+    const current = selectedStudentId !== 'ALL' 
+      ? studentList.find((s) => s.id === selectedStudentId) 
+      : null;
+
+    return { 
+      totalAmount: sum, 
+      totalUnpaidCount: count, 
+      selectedStudentName: current?.full_name || current?.name || current?.nama || '' 
     };
+  }, [filteredStudents, invoicesByStudent, selectedStudentId, studentList]);
 
-    useEffect(() => {
+  // 6. Handlers
+  const handleFeatureClick = (featureName) => {
+    setModalConfig({
+      isOpen: true,
+      title: `${featureName} Segera Hadir`,
+      message: `Mohon bersabar, modul ${featureName} saat ini sedang dalam tahap pengembangan dan integrasi sistem.`
+    });
+  };
 
-        fetchData(true);
-    }, []);
+  const closeModal = () => setModalConfig({ isOpen: false, title: '', message: '' });
 
-    return { students, invoicesByStudent, loading, error, refetch: () => fetchData(false) };
+  const scrollToChild = (id, idx) => {
+    setSelectedStudentId(id);
+    carouselRef.current?.children[idx]?.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'nearest', 
+      inline: 'center' 
+    });
+  };
+
+  const handleRefetch = () => {
+    if (typeof refetchStudents === 'function') refetchStudents();
+    if (typeof refetchInvoices === 'function') refetchInvoices();
+  };
+
+  return {
+    // Data & Calculations
+    students: studentList,
+    invoicesByStudent,
+    filteredStudents,
+    totalAmount,
+    totalUnpaidCount,
+    selectedStudentName,
+    quote: islamicQuotes ? islamicQuotes[quoteIdx] : '',
+    loading: loadingStudents || loadingInvoices,
+    error: errorStudents || errorInvoices,
+
+    // UI State & Handlers
+    selectedStudentId,
+    setSelectedStudentId,
+    modalConfig,
+    carouselRef,
+    refetch: handleRefetch,
+    handleFeatureClick,
+    closeModal,
+    scrollToChild,
+  };
 };
+
+export default useSppDashboardData;

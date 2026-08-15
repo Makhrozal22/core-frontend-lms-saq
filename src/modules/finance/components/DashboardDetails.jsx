@@ -15,7 +15,7 @@ export const DashboardDetails = ({
     scrollToChild,
     totalAmount,
     totalUnpaidCount,
-    onFeatureClick // Callback untuk memicu modal
+    onFeatureClick 
 }) => {
     const navigate = useNavigate();
 
@@ -75,8 +75,6 @@ export const DashboardDetails = ({
                 </div>
             </div>
 
-            {/* Tab Switcher Per Santri */}
-            <ChildSelector students={students} selectedId={selectedStudentId} onSelect={setSelectedStudentId} />
 
             {/* 4. Grid Ringkasan Finansial */}
             <div className="grid grid-cols-2 gap-3">
