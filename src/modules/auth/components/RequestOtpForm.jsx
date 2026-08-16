@@ -1,4 +1,5 @@
 import React from 'react';
+import { Fingerprint } from 'lucide-react';
 
 export const RequestOtpForm = ({ phone, setPhone, onSubmit, loading }) => {
   return (
@@ -43,16 +44,46 @@ export const RequestOtpForm = ({ phone, setPhone, onSubmit, loading }) => {
         )}
       </button>
 
-      {/* Biometric Button Option */}
+      {/* Divider */}
+      <div className="flex items-center gap-3">
+        <div className="flex-1 h-px bg-slate-100" />
+        <span className="text-slate-300 text-[11px] font-semibold uppercase tracking-wider">atau</span>
+        <div className="flex-1 h-px bg-slate-100" />
+      </div>
+
+      {/* Biometric Button */}
       <button
         type="button"
         onClick={() => alert('Fitur Biometrik / Fingerprint akan segera aktif!')}
-        className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border-2 border-slate-100 text-slate-600 font-semibold text-xs hover:border-emerald-200 hover:text-emerald-700 transition-colors cursor-pointer"
+        className="
+    w-full
+    flex items-center justify-center gap-3
+    py-3.5
+    rounded-2xl
+    border-2 border-slate-100
+    bg-white
+    text-slate-500
+    hover:border-emerald-200
+    hover:bg-emerald-50/50
+    hover:text-emerald-700
+    font-semibold text-xs
+    transition-all duration-200
+    cursor-pointer
+    group
+  "
       >
-        <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
-        Gunakan Fingerprint / Biometrik
+        <Fingerprint
+          size={22}
+          strokeWidth={1.8}
+          className="
+      text-slate-400
+      group-hover:text-emerald-600
+      transition-colors duration-200
+      flex-shrink-0
+    "
+        />
+
+        <span>Masuk dengan Fingerprint</span>
       </button>
     </form>
   );

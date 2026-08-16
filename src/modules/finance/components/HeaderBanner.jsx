@@ -16,8 +16,8 @@ export const HeaderBanner = ({ user, quote, onNotificationClick }) => {
             {user?.name || user?.nama || 'Wali Santri'} 👋
           </h1>
         </div>
-        <button 
-          onClick={onNotificationClick} 
+        <button
+          onClick={onNotificationClick}
           className="relative w-10 h-10 bg-white/20 hover:bg-white/30 rounded-2xl flex items-center justify-center transition-colors"
         >
           <Bell size={20} className="text-white" />

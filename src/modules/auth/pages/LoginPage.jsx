@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuthOtp } from '../hooks/useAuthOtp';
 import { RequestOtpForm } from '../components/RequestOtpForm';
 import { VerifyOtpForm } from '../components/VerifyOtpForm';
+import logoImg from '@/assets/aic.png';
 
 export const LoginPage = () => {
   const {
@@ -23,14 +24,13 @@ export const LoginPage = () => {
     <div className="flex-1 flex flex-col justify-between pt-4">
       {/* Top Banner & Header */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 pt-6 pb-8">
-        {/* Logo Shield Emerald Custom */}
-        <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-lg mb-4 transform hover:scale-105 transition-transform">
-          {/* <svg width="44" height="44" viewBox="0 0 52 52" fill="none">
-            <path d="M26 4C26 4 8 12 8 26C8 38.15 16.28 48 26 48C35.72 48 44 38.15 44 26C44 12 26 4 26 4Z" fill="#059669" />
-            <path d="M26 10C26 10 14 16.5 14 26C14 34.84 19.37 42 26 42C32.63 42 38 34.84 38 26C38 16.5 26 10 26 10Z" fill="#047857" />
-            <path d="M26 16C26 16 19 20.5 19 26C19 31.52 22.13 36 26 36C29.87 36 33 31.52 33 26C33 20.5 26 16 26 16Z" fill="#d4a853" />
-            <circle cx="26" cy="26" r="4" fill="white" />
-          </svg> */}
+        {/* Logo */}
+        <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-lg mb-4 transform hover:scale-105 transition-transform overflow-hidden">
+          <img
+            src={logoImg}
+            alt="Logo SAQ Arrahman"
+            className="w-14 h-14 object-contain"
+          />
         </div>
 
         <h1 className="font-bold text-white text-2xl text-center mb-0.5 tracking-tight">
@@ -77,15 +77,9 @@ export const LoginPage = () => {
           />
         )}
 
-        {/* Footer info & SSL */}
-        {/* <div className="mt-6 flex items-center gap-3">
-          <div className="flex-1 h-px bg-slate-100" />
-          <p className="text-slate-300 text-[11px] uppercase tracking-wider font-semibold">Diproteksi SSL</p>
-          <div className="flex-1 h-px bg-slate-100" />
-        </div> */}
-
         <p className="text-center text-slate-400 text-xs mt-3">
-          Learning Manajemen Sistem - LMS
+          Belum punya akun? 
+          <a href="#" className="text-emerald-500 hover:text-emerald-600 font-semibold"> Hubungi pihak sekolah</a>
         </p>
       </div>
     </div>
