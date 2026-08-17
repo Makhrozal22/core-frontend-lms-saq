@@ -1,61 +1,30 @@
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
+import { formatTanggalIndonesia } from '../../../utils/formatDate';
+import { formatRupiah } from '../../../utils/formatRupiah';
 import {
   ArrowLeft, CreditCard, Download, Receipt,
-  User, CheckCircle2, ChevronRight, Wallet
+  User, CheckCircle2
 } from 'lucide-react';
 
-import { useStudents } from '../../finance/hooks/useStudents';
-import { useInvoices } from '../../finance/hooks/useInvoices';
-
-// Helper Format Rupiah
-const formatRupiah = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val || 0);
-
-// Data Dummy Rincian Item (Sambil menunggu endpoint detail spesifik dari backend Laravel)
-const dummyItemizedBills = [
-  { title: 'SPP Bulanan (Agustus)', amount: 350000 },
-  { title: 'Kegiatan Ekstrakurikuler', amount: 100000 },
-  { title: 'Buku & Modul Pembelajaran', amount: 150000 },
-];
+import { useSppDetail } from '../hooks/useSppDetail';
 
 export const SppDetailPage = () => {
-  // Mengambil data dari API yang sudah ada di modul finance
-  const { students = [], loading: loadingStudents } = useStudents();
-  const { invoicesByStudent, loading: loadingInvoices } = useInvoices(students);
-
-  // State pilihan filter anak ('ALL' atau ID anak tertentu)
-  const [selectedStudentId, setSelectedStudentId] = useState('ALL');
-
-  // Kalkulasi Total Tagihan dari API (Invoices yang belum lunas)
-  const { totalAmount, totalUnpaidCount, activeStudent } = useMemo(() => {
-    let sum = 0;
-    let count = 0;
-
-    const targetStudents = selectedStudentId === 'ALL'
-      ? students
-      : students.filter(s => s.id === selectedStudentId);
-
-    targetStudents.forEach((student) => {
-      (invoicesByStudent[student.id] || []).forEach((item) => {
-        if (!item.isLunas) {
-          sum += Number(item.nominal || 0);
-          count += 1;
-        }
-      });
-    });
-
-    const current = selectedStudentId !== 'ALL' ? students.find(s => s.id === selectedStudentId) : null;
-
-    return {
-      totalAmount: sum > 0 ? sum : (selectedStudentId === 'ALL' ? 850000 : 500000), // Fallback dummy jika data kosong
-      totalUnpaidCount: count > 0 ? count : 3,
-      activeStudent: current
-    };
-  }, [students, invoicesByStudent, selectedStudentId]);
-
-  const handlePayAction = (targetName) => {
-    alert(`Mengarahkan ke Payment Gateway untuk pembayaran: ${targetName} sebesar ${formatRupiah(totalAmount)}`);
-  };
+  const {
+    students,
+    loadingStudents,
+    loadingInvoices,
+    loadingDetails,
+    selectedStudentId,
+    setSelectedStudentId,
+    nextDueDate,
+    totalAmount,
+    activeStudent,
+    targetInvoices,
+    invoiceDetailsById,
+    handlePayAction,
+    handleDownloadInvoice,
+  } = useSppDetail();
 
   if (loadingStudents || loadingInvoices) {
     return (
@@ -87,8 +56,8 @@ export const SppDetailPage = () => {
             <button
               onClick={() => setSelectedStudentId('ALL')}
               className={`px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all ${selectedStudentId === 'ALL'
-                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                 }`}
             >
               Semua Santri (Total)
@@ -101,8 +70,8 @@ export const SppDetailPage = () => {
                   key={student.id}
                   onClick={() => setSelectedStudentId(student.id)}
                   className={`px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all ${isSelected
-                      ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                     }`}
                 >
                   {name}
@@ -119,33 +88,159 @@ export const SppDetailPage = () => {
           </p>
           <p className="text-3xl font-extrabold text-emerald-600">{formatRupiah(totalAmount)}</p>
 
-          <div className="mt-3 inline-block">
-            <span className="text-xs font-bold text-amber-700 bg-amber-100 border border-amber-200 px-3 py-1 rounded-full">
-              Jatuh Tempo: 20 Agustus 2026
-            </span>
-          </div>
+          {/* Ambil data tanggal dari api dan Utils */}
+          <span className="text-xs font-bold text-amber-700 bg-amber-100 border border-amber-200 px-3 py-1 rounded-full">
+            Jatuh Tempo:{' '}
+            {nextDueDate
+              ? formatTanggalIndonesia(nextDueDate)
+              : 'Tidak ada'}
+          </span>
 
-          {/* Rincian Item (Menggunakan data dummy karena endpoint detail item belum ada) */}
+          {/* Rincian Komponen Tagihan */}
           <div className="mt-5 pt-4 border-t border-slate-100 text-left">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-7 h-7 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600">
                 <Receipt size={16} />
               </div>
-              <h3 className="text-xs font-bold text-slate-800">Rincian Komponen Tagihan</h3>
-            </div>
 
-            <div className="space-y-2.5">
-              {dummyItemizedBills.map((bill, idx) => (
-                <div key={idx} className="flex justify-between text-xs">
-                  <span className="text-slate-500">{bill.title}</span>
-                  <span className="text-slate-800 font-bold">{formatRupiah(bill.amount)}</span>
-                </div>
-              ))}
-              <div className="border-t border-slate-100 pt-2.5 flex justify-between text-xs">
-                <span className="text-slate-800 font-extrabold">Total Tagihan</span>
-                <span className="text-emerald-600 font-extrabold">{formatRupiah(totalAmount)}</span>
+              <div>
+                <h3 className="text-xs font-bold text-slate-800">
+                  Rincian Komponen Tagihan
+                </h3>
+
+                <p className="text-[10px] text-slate-400 mt-0.5">
+                  Detail berdasarkan invoice dari sistem
+                </p>
               </div>
             </div>
+
+            {loadingDetails ? (
+              <div className="flex items-center gap-2 py-4 text-xs text-slate-400">
+                <div className="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+                Memuat rincian...
+              </div>
+            ) : (
+              targetInvoices.length === 0 ? (
+                <div className="py-5 text-center">
+                  <CheckCircle2
+                    size={28}
+                    className="mx-auto text-emerald-500 mb-2"
+                  />
+
+                  <p className="text-xs font-bold text-slate-700">
+                    Tidak ada tagihan aktif
+                  </p>
+
+                  <p className="text-[10px] text-slate-400 mt-1">
+                    Semua tagihan sudah lunas.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {targetInvoices.map((invoice) => {
+                    const detail =
+                      invoiceDetailsById[invoice.id];
+
+                    const studentName =
+                      invoice.student?.full_name ||
+                      invoice.student?.name ||
+                      invoice.student?.nama ||
+                      'Santri';
+
+                    const items = detail?.items || [];
+
+                    return (
+                      <div
+                        key={invoice.id}
+                        className="rounded-2xl border border-slate-100 bg-slate-50/70 p-3"
+                      >
+                        {/* Header Invoice */}
+                        <div className="flex items-start justify-between gap-3 mb-3">
+                          <div>
+                            <p className="text-[10px] text-slate-400">
+                              Invoice
+                            </p>
+
+                            <p className="text-[11px] font-bold text-slate-700 break-all">
+                              {detail?.invoiceNumber ||
+                                invoice.invoiceNumber ||
+                                '-'}
+                            </p>
+
+                            {selectedStudentId === 'ALL' && (
+                              <p className="text-[10px] text-emerald-600 font-semibold mt-1">
+                                {studentName}
+                              </p>
+                            )}
+                          </div>
+
+                          <span className="shrink-0 px-2 py-1 rounded-full bg-amber-100 text-amber-700 text-[9px] font-bold">
+                            Belum Lunas
+                          </span>
+                        </div>
+
+                        {/* Item Invoice */}
+                        {items.length > 0 ? (
+                          <div className="space-y-2">
+                            {items.map((item, index) => (
+                              <div
+                                key={`${invoice.id}-${index}`}
+                                className="flex justify-between items-start gap-3 text-xs"
+                              >
+                                <div className="flex items-start gap-2 min-w-0">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+
+                                  <span className="text-slate-500 leading-relaxed">
+                                    {item.itemName}
+                                  </span>
+                                </div>
+
+                                <span className="text-slate-800 font-bold whitespace-nowrap">
+                                  {formatRupiah(item.amount)}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-[10px] text-slate-400 py-2">
+                            Rincian komponen belum tersedia.
+                          </p>
+                        )}
+
+                        {/* Total Invoice */}
+                        <div className="border-t border-slate-200 mt-3 pt-2.5 flex justify-between items-center">
+                          <span className="text-[11px] text-slate-600 font-bold">
+                            Total Invoice
+                          </span>
+
+                          <span className="text-sm text-emerald-600 font-extrabold">
+                            {formatRupiah(
+                              detail?.totalAmount ??
+                              invoice.nominal
+                            )}
+                          </span>
+                        </div>
+
+                        {/* Sisa */}
+                        {detail && (
+                          <div className="flex justify-between mt-1">
+                            <span className="text-[10px] text-slate-400">
+                              Sisa pembayaran
+                            </span>
+
+                            <span className="text-[10px] text-red-500 font-bold">
+                              {formatRupiah(
+                                detail.remainingAmount
+                              )}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )
+            )}
           </div>
         </div>
 
@@ -189,7 +284,7 @@ export const SppDetailPage = () => {
           </button>
 
           <button
-            onClick={() => alert('Mengunduh dokumen invoice dalam format PDF...')}
+            onClick={handleDownloadInvoice}
             className="w-full py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-700 font-semibold text-xs flex items-center justify-center gap-2 hover:bg-slate-50 active:scale-95 transition-all cursor-pointer shadow-sm"
           >
             <Download size={18} className="text-emerald-600" />

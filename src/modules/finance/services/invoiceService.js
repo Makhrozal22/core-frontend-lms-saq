@@ -1,29 +1,47 @@
 import api from '../../../config/axios';
 
+const bulanNames = [
+  '',
+  'Januari',
+  'Februari',
+  'Maret',
+  'April',
+  'Mei',
+  'Juni',
+  'Juli',
+  'Agustus',
+  'September',
+  'Oktober',
+  'November',
+  'Desember',
+];
+
 export const invoiceService = {
+  /**
+   * Mengambil daftar invoice berdasarkan student
+   */
   getInvoicesByStudent: async (studentId) => {
     if (!studentId) return [];
-    
+
     const response = await api.get('/finance/invoices', {
       params: { student_id: studentId },
     });
-    
-    // Karena response Laravel menggunakan pagination (ada format { data: [...], links: {...}, meta: {...} }),
-    // maka list data aslinya berada di dalam response.data.data
+
     const rawData = response.data?.data || [];
 
-    // Mapping agar sesuai dengan kebutuhan komponen UI Frontend
     return rawData.map((item, idx) => {
-      // 1. Ambil nominal dari field 'total_amount'
       const nominal = item.total_amount || 0;
 
-      // 2. Buat judul deskriptif dari invoice_number & bulan/tahun periode
-      const bulanNames = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-      const namaBulan = bulanNames[item.period_month] || `Bulan ${item.period_month}`;
+      const namaBulan =
+        bulanNames[item.period_month] ||
+        `Bulan ${item.period_month}`;
+
       const title = `SPP ${namaBulan} ${item.period_year || ''} (${item.invoice_number || 'Invoice'})`;
 
-      // 3. Deteksi status lunas dari field 'status' ('unpaid' vs 'paid')
-      const isLunas = item.status === 'paid' || item.status === 'LUNAS' || item.status === true;
+      const isLunas =
+        item.status === 'paid' ||
+        item.status === 'LUNAS' ||
+        item.status === true;
 
       return {
         id: item.id || idx,
@@ -32,8 +50,55 @@ export const invoiceService = {
         isLunas,
         dueDate: item.due_date,
         invoiceNumber: item.invoice_number,
+
+        // Simpan informasi periode
+        periodMonth: item.period_month,
+        periodYear: item.period_year,
+
+        // Status asli dari backend
+        status: item.status,
       };
     });
+  },
+
+  /**
+   * Mengambil detail satu invoice
+   *
+   * GET /finance/invoices/{invoice}
+   */
+  getInvoiceDetail: async (invoiceId) => {
+    if (!invoiceId) return null;
+
+    const response = await api.get(
+      `/finance/invoices/${invoiceId}`
+    );
+
+    const data = response.data?.data;
+
+    if (!data) return null;
+
+    return {
+      id: data.id,
+      invoiceNumber: data.invoice_number,
+
+      periodMonth: data.period_month,
+      periodYear: data.period_year,
+
+      dueDate: data.due_date,
+
+      totalAmount: Number(data.total_amount || 0),
+      paidAmount: Number(data.paid_amount || 0),
+      remainingAmount: Number(data.remaining_amount || 0),
+
+      status: data.status,
+
+      items: Array.isArray(data.items)
+        ? data.items.map((item) => ({
+            itemName: item.item_name,
+            amount: Number(item.amount || 0),
+          }))
+        : [],
+    };
   },
 };
 

@@ -2,14 +2,22 @@ import { useState, useEffect, useCallback } from 'react';
 import { invoiceService } from '../services/invoiceService';
 
 export const useInvoices = (students = []) => {
-  // Map untuk menyimpan tagihan per studentId: { 1: [bill1, bill2], 2: [bill3] }
   const [invoicesByStudent, setInvoicesByStudent] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [invoiceDetailsById, setInvoiceDetailsById] = useState({});
 
+  const [loading, setLoading] = useState(false);
+  const [loadingDetails, setLoadingDetails] = useState(false);
+
+  const [error, setError] = useState(null);
+  const [detailError, setDetailError] = useState(null);
+
+  /**
+   * Mengambil daftar invoice semua student
+   */
   const fetchAllInvoices = useCallback(async () => {
     if (!students || students.length === 0) {
       setInvoicesByStudent({});
+      setInvoiceDetailsById({});
       return;
     }
 
@@ -17,27 +25,94 @@ export const useInvoices = (students = []) => {
     setError(null);
 
     try {
-      // Ambil tagihan untuk setiap anak secara bersamaan
       const requests = students.map((student) =>
-        invoiceService.getInvoicesByStudent(student.id).then((bills) => ({
-          studentId: student.id,
-          bills,
-        }))
+        invoiceService
+          .getInvoicesByStudent(student.id)
+          .then((bills) => ({
+            studentId: student.id,
+            bills,
+          }))
       );
 
       const results = await Promise.all(requests);
 
-      // Susun data menjadi object dictionary berdasarkan studentId
       const invoiceMap = {};
+
       results.forEach(({ studentId, bills }) => {
         invoiceMap[studentId] = bills;
       });
 
       setInvoicesByStudent(invoiceMap);
+
+      /**
+       * Ambil semua invoice unik
+       */
+      const allInvoices = results.flatMap(
+        ({ bills }) => bills
+      );
+
+      const uniqueInvoices = Array.from(
+        new Map(
+          allInvoices.map((invoice) => [
+            invoice.id,
+            invoice,
+          ])
+        ).values()
+      );
+
+      /**
+       * Ambil detail masing-masing invoice
+       */
+      if (uniqueInvoices.length > 0) {
+        setLoadingDetails(true);
+        setDetailError(null);
+
+        try {
+          const detailResults = await Promise.all(
+            uniqueInvoices.map(async (invoice) => {
+              const detail =
+                await invoiceService.getInvoiceDetail(
+                  invoice.id
+                );
+
+              return {
+                id: invoice.id,
+                detail,
+              };
+            })
+          );
+
+          const detailMap = {};
+
+          detailResults.forEach(({ id, detail }) => {
+            if (detail) {
+              detailMap[id] = detail;
+            }
+          });
+
+          setInvoiceDetailsById(detailMap);
+        } catch (err) {
+          console.error(
+            'Error fetching invoice details:',
+            err
+          );
+
+          setDetailError(
+            err.response?.data?.message ||
+              'Gagal memuat rincian invoice.'
+          );
+        } finally {
+          setLoadingDetails(false);
+        }
+      } else {
+        setInvoiceDetailsById({});
+      }
     } catch (err) {
       console.error('Error fetching invoices:', err);
+
       setError(
-        err.response?.data?.message || 'Gagal memuat rincian tagihan anak.'
+        err.response?.data?.message ||
+          'Gagal memuat rincian tagihan anak.'
       );
     } finally {
       setLoading(false);
@@ -50,8 +125,16 @@ export const useInvoices = (students = []) => {
 
   return {
     invoicesByStudent,
+
+    // Detail invoice berdasarkan ID
+    invoiceDetailsById,
+
     loading,
+    loadingDetails,
+
     error,
+    detailError,
+
     refetchInvoices: fetchAllInvoices,
   };
 };
