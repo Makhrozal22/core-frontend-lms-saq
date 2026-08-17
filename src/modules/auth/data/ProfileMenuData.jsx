@@ -44,7 +44,7 @@ export const getProfileMenuGroups = ({
         icon: Shield,
         label: "Keamanan & Biometrik",
         sub: "PIN, fingerprint, face ID",
-        action: () => navigate("/biometric"),
+        action: () => showModal("Keamanan & Biometrik", "Fitur keamanan dan biometrik akan segera aktif pada pembaruan berikutnya."),
       },
       {
         icon: Settings,

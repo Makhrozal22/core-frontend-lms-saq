@@ -1,7 +1,7 @@
 import React from 'react';
 import { Fingerprint } from 'lucide-react';
 
-export const RequestOtpForm = ({ phone, setPhone, onSubmit, loading }) => {
+export const RequestOtpForm = ({ phone, setPhone, onSubmit, loading, showModal }) => {
   return (
     <form onSubmit={onSubmit} className="space-y-4 animate-fadeIn">
       <div>
@@ -54,7 +54,7 @@ export const RequestOtpForm = ({ phone, setPhone, onSubmit, loading }) => {
       {/* Biometric Button */}
       <button
         type="button"
-        onClick={() => alert('Fitur Biometrik / Fingerprint akan segera aktif!')}
+        onClick={() => showModal('Keamanan & Biometrik', 'Fitur Biometrik / Fingerprint akan segera aktif pada pembaruan berikutnya!')}
         className="
     w-full
     flex items-center justify-center gap-3

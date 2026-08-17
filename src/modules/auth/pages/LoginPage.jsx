@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuthOtp } from '../hooks/useAuthOtp';
 import { RequestOtpForm } from '../components/RequestOtpForm';
 import { VerifyOtpForm } from '../components/VerifyOtpForm';
+import { CustomModal } from '../../../components/CustomModal';
 import logoImg from '@/assets/aic.png';
 
 export const LoginPage = () => {
@@ -19,6 +20,16 @@ export const LoginPage = () => {
     handleResendOtp,
     handleBackToPhone,
   } = useAuthOtp();
+
+  const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '' });
+
+  const showModal = (title, message) => {
+    setModalConfig({ isOpen: true, title: title || 'Informasi Fitur', message });
+  };
+
+  const closeModal = () => {
+    setModalConfig({ isOpen: false, title: '', message: '' });
+  };
 
   return (
     <div className="flex-1 flex flex-col justify-between pt-4">
@@ -63,6 +74,7 @@ export const LoginPage = () => {
             setPhone={setPhone}
             onSubmit={handleRequestOtp}
             loading={loading}
+            showModal={showModal}
           />
         ) : (
           <VerifyOtpForm
@@ -82,6 +94,13 @@ export const LoginPage = () => {
           <a href="#" className="text-emerald-500 hover:text-emerald-600 font-semibold"> Hubungi pihak sekolah</a>
         </p>
       </div>
+
+      <CustomModal 
+        isOpen={modalConfig.isOpen}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        onClose={closeModal}
+      />
     </div>
   );
 };
