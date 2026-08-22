@@ -3,19 +3,25 @@ import { studentService } from '../services/studentService';
 
 export const useStudents = () => {
   const [students, setStudents] = useState([]);
+  const [parentData, setParentData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchStudents = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await studentService.getStudents();
-      setStudents(Array.isArray(data) ? data : []);
+      const [studentsRes, parentRes] = await Promise.all([
+        studentService.getStudents(),
+        studentService.getParentProfile(),
+      ]);
+      
+      setStudents(Array.isArray(studentsRes) ? studentsRes : []);
+      setParentData(parentRes);
     } catch (err) {
       const message =
         err.response?.data?.message ||
-        'Gagal memuat data anak. Silakan coba lagi.';
+        'Gagal memuat data profil. Silakan coba lagi.';
       setError(message);
     } finally {
       setLoading(false);
@@ -23,14 +29,15 @@ export const useStudents = () => {
   }, []);
 
   useEffect(() => {
-    fetchStudents();
-  }, [fetchStudents]);
+    fetchData();
+  }, [fetchData]);
 
   return {
     students,
+    parentData,
     loading,
     error,
-    refetch: fetchStudents,
+    refetch: fetchData,
   };
 };
 

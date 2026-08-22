@@ -13,7 +13,7 @@ export const HeaderBanner = ({ user, quote, onNotificationClick }) => {
         <div>
           <p className="text-emerald-100 text-xs">Assalamu'alaikum Selamat {getGreeting()},</p>
           <h1 className="font-extrabold text-white text-lg leading-tight">
-            {user?.name || user?.nama || 'Wali Santri'} 👋
+            {user?.name || user?.father_name || 'Wali Santri'} 👋
           </h1>
         </div>
         <button

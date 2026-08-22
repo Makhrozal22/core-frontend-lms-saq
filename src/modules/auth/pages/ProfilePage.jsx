@@ -1,5 +1,5 @@
 import React from "react";
-import { User, ChevronRight, LogOut } from "lucide-react";
+import { ChevronRight, LogOut } from "lucide-react";
 
 import { useProfilePage } from "../hooks/useProfilePage";
 import FeatureModal from "../components/FeatureModal";
@@ -30,20 +30,70 @@ export default function ProfilePage() {
       </div>
 
       <div className="px-4 pt-4 space-y-4 max-w-md mx-auto">
-        {/* Banner Profil */}
+        {/* Banner Profil (Warna & Ukuran Asli) */}
         <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl p-5 flex items-center gap-4 shadow-md text-white">
-          <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center flex-shrink-0 border border-white/20">
-            <User size={32} className="text-white" />
+          
+          {/* Dual Avatar (Persiapan Photo Upload API) */}
+          <div className="flex items-center -space-x-3 flex-shrink-0">
+            {/* Photo / Avatar Ayah */}
+            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md border-2 border-white/30 flex items-center justify-center overflow-hidden shadow-sm">
+              {parent?.father_photo ? (
+                <img
+                  src={parent.father_photo}
+                  alt={parent?.father_name || "Ayah"}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="font-extrabold text-xs text-white">
+                  {parent?.father_name ? parent.father_name.charAt(0).toUpperCase() : "A"}
+                </span>
+              )}
+            </div>
+
+            {/* Photo / Avatar Ibu */}
+            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md border-2 border-white/30 flex items-center justify-center overflow-hidden shadow-sm">
+              {parent?.mother_photo ? (
+                <img
+                  src={parent.mother_photo}
+                  alt={parent?.mother_name || "Ibu"}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="font-extrabold text-xs text-emerald-100">
+                  {parent?.mother_name ? parent.mother_name.charAt(0).toUpperCase() : "I"}
+                </span>
+              )}
+            </div>
           </div>
-          <div className="min-w-0 flex-1">
-            <h2 className="font-bold text-base truncate">
-              {parent?.name || parent?.full_name || "Wali Santri"}
-            </h2>
-            <p className="text-emerald-100 text-xs truncate">{parent?.phone_number|| "-"}</p>
-            {parent?.email && (
-              <p className="text-emerald-200/80 text-[11px] truncate mt-0.5">{parent.email}</p>
-            )}
-            <div className="flex items-center gap-1.5 mt-2">
+
+          {/* Info Orang Tua */}
+          <div className="min-w-0 flex-1 space-y-0.5">
+            {/* Row Nama Ayah */}
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="text-[11px] font-medium text-emerald-200/90 flex-shrink-0">
+                Ayah:
+              </span>
+              <h2 className="font-bold text-sm truncate text-white">
+                {parent?.father_name || "Belum diisi"}
+              </h2>
+            </div>
+
+            {/* Row Nama Ibu */}
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="text-[11px] font-medium text-emerald-200/90 flex-shrink-0">
+                Ibu:
+              </span>
+              <p className="text-xs font-semibold text-emerald-100 truncate">
+                {parent?.mother_name || "Belum diisi"}
+              </p>
+            </div>
+
+            {/* Nomor Telepon & Jumlah Anak */}
+            <p className="text-emerald-100/80 text-[11px] truncate pt-0.5">
+              {parent?.phone_number || "-"}
+            </p>
+
+            <div className="flex items-center gap-1.5 pt-1">
               <span className="w-2 h-2 bg-emerald-300 rounded-full animate-pulse" />
               {loadingChildren ? (
                 <span className="w-20 h-3 bg-white/20 rounded-full animate-pulse inline-block" />

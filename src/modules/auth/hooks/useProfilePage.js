@@ -6,7 +6,7 @@ import { getProfileMenuGroups } from "../data/ProfileMenuData";
 
 export const useProfilePage = () => {
   const navigate = useNavigate();
-  const { user: parent, logout } = useAuth();
+  const { user: authUser, logout } = useAuth();
 
   const [logoutSheet, setLogoutSheet] = useState(false);
   const [childrenSheet, setChildrenSheet] = useState(false);
@@ -14,10 +14,14 @@ export const useProfilePage = () => {
 
   const {
     students: children,
+    parentData,
     loading: loadingChildren,
     error: errorChildren,
     refetch: refetchChildren,
   } = useStudents();
+
+  // Gabungkan data auth fallback dengan data parent dari API
+  const parentProfile = parentData || authUser;
 
   const triggerModal = (title, message) =>
     setModalConfig({ isOpen: true, title, message });
@@ -30,21 +34,21 @@ export const useProfilePage = () => {
     navigate("/auth/login", { replace: true });
   };
 
-  const menuGroups = useMemo(
+ const menuGroups = useMemo(
     () =>
       getProfileMenuGroups({
         childrenCount: children.length,
         loadingChildren,
-        parentPhone: parent?.phone,
+        parentPhone: parentProfile?.phone_number || parentProfile?.phone,
         navigate,
         showModal: triggerModal,
         openChildrenSheet: () => setChildrenSheet(true),
       }),
-    [children.length, loadingChildren, parent?.phone, navigate]
+    [children.length, loadingChildren, parentProfile, navigate]
   );
 
   return {
-    parent,
+    parent: parentProfile,
     children,
     loadingChildren,
     errorChildren,
@@ -59,5 +63,4 @@ export const useProfilePage = () => {
     menuGroups,
   };
 };
-
 export default useProfilePage;

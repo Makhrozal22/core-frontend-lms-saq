@@ -59,7 +59,7 @@ export const DashboardDetails = ({
                                 <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100">
                                     <div onClick={(e) => { e.stopPropagation(); onFeatureClick && onFeatureClick("Saldo Jajan"); }}>
                                         <p className="text-slate-400 text-[10px]">Saldo Jajan</p>
-                                        <p className="font-bold text-slate-800 text-xs">Rp 45.000</p>
+                                        <p className="font-bold text-slate-800 text-xs">Rp 0</p>
                                     </div>
                                     <div>
                                         <p className="text-slate-400 text-[10px]">Tagihan SPP</p>
@@ -98,7 +98,7 @@ export const DashboardDetails = ({
                         </div>
                         <span className="text-slate-500 text-xs font-semibold">Saldo Jajan</span>
                     </div>
-                    <p className="font-extrabold text-lg text-slate-800 mb-1">Rp 45.000</p>
+                    <p className="font-extrabold text-lg text-slate-800 mb-1">Rp 0</p>
                     <p className="text-emerald-600 text-[10px] font-bold flex items-center gap-1">Isi Saldo <ArrowRight size={12} /></p>
                 </div>
 
@@ -109,7 +109,7 @@ export const DashboardDetails = ({
                         </div>
                         <span className="text-slate-500 text-xs font-semibold">Tabungan</span>
                     </div>
-                    <p className="font-extrabold text-lg text-slate-800 mb-1">Rp 250.000</p>
+                    <p className="font-extrabold text-lg text-slate-800 mb-1">Rp 0</p>
                     <p className="text-blue-600 text-[10px] font-bold flex items-center gap-1">Lihat Detail <ArrowRight size={12} /></p>
                 </div>
 
